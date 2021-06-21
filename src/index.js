@@ -3,16 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './exercise';
+import { Provider } from 'react-redux'; // react프로젝트에서 redux적용
+import { createStore } from 'redux';  // reducer를 파라미터로 넣기 위한
+import rootReducer from './modules' // modules dir 불러오면 index.js를 불러옴
+
+const store = createStore(rootReducer);
+// console.log(store.getState());
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/* 리액트 컴포넌트 어디서든지 store를 사용할 수 있음 */}
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
