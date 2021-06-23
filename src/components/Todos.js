@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-function TodoItem({ todo, onToggle }) {
+// 컴포넌트 최적화 - React.memo()
+const TodoItem = React.memo(function TodoItem({ todo, onToggle }) {
   return (
     <li
       style={{
@@ -11,9 +12,9 @@ function TodoItem({ todo, onToggle }) {
       {todo.text}
     </li>
   );
-}
+});
 
-function TodoList({ todos, onToggle }) {
+const TodoList = React.memo(function TodoList({ todos, onToggle }) {
 
   return (
     <ul>
@@ -22,7 +23,7 @@ function TodoList({ todos, onToggle }) {
       ))}
     </ul>
   );
-}
+});
 
 // 리덕스를 사용한다고 해서 모든 상태를 리덕스에서 관리하는 것은 아님(필요한 경우 useState로 관리 가능)
 function Todos({ todos, onCreate, onToggle }) {
@@ -48,5 +49,5 @@ function Todos({ todos, onCreate, onToggle }) {
   );
 }
 
-export default Todos;
+export default React.memo(Todos);
 
