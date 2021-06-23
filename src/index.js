@@ -6,8 +6,10 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux'; // react프로젝트에서 redux적용
 import { createStore } from 'redux';  // reducer를 파라미터로 넣기 위한
 import rootReducer from './modules' // modules dir 불러오면 index.js를 불러옴
+import { composeWithDevTools } from 'redux-devtools-extension'
 
-const store = createStore(rootReducer);
+// 개발자도구에서 redux상태를 조회하고 dispatch도 할 수 있음
+const store = createStore(rootReducer, composeWithDevTools());
 // console.log(store.getState());
 
 ReactDOM.render(
