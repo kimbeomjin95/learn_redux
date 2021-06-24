@@ -1,49 +1,51 @@
 // 컨테이너 컴포넌트란: 리덕스 스토어의 상태를 조회(useSelector)하거나, 액션을 디스패치 할 수 있는 컴포넌트를 의미함 
 // 그리고, HTML 태그들을 사용하지 않고 다른 프리젠테이셔널 컴포넌트들을 불러와서 사용
 import React from 'react';
+import { bindActionCreators } from 'redux'
 import Counter from '../components/Counter';
-
-// react component에서 redux를 연동할 때는 useSelector, useDispatch를 사용
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'; // 상태 조회 시 
+import { connect } from 'react-redux'; // 상태 조회 시 
 import { decrease, increase, setDiff } from '../modules/counter';
 
-function CounterContainer() {
-  // state: store.getState();의 반환하는 객체상태가 state로 옴, 리덕스의 현재 상태  
-
-  // useSelector에서 매번 새로운 객체를 만들고 있기 때문에 다른 컨테이너가 렌더링됨
-  const { number, diff } = useSelector(state => ({
-    number: state.counter.number,
-    diff: state.counter.diff
-    // 최적화 방법2 - useSelector의 두번째 파라미터의 이전상태와 다음상태를 비교하는 함수를 만듬
-  }), // (left, right) => {
-    // return left.diff === right.diff && left.number === right.number
-
-    // 최적화 방법3 
-    shallowEqual  
-  );
-
-  // 최적화 방법1 - useSelector를 여러번 선언 및 하나의 상태만 조회
-  // const number = useSelector(state => state.counter.number);
-  // const diff = useSelector(state => state.counter.diff);
-
-  // 언제든 dispatch를 사용해서 dispatch를 발생시킬 수 있음
-  // action을 dispatch할 때는 useDispatch 사용 
-  const dispatch = useDispatch();
-
-  // action 생성 함수(호출되면 action 객체가 만들어지므로 dispatch가 됨)
-  const onIncrease = () => dispatch(increase()); // modules/counter
-  const onDecrease = () => dispatch(decrease());
-  const onSetDiff = diff => dispatch(setDiff(diff));
-
+// connect를 Hook과 달리 props를 통해서 원하는 값, 함수를 받아올 수 있음
+function CounterContainer({
+  number, diff, increase, decrease, setDiff
+}) {
   return (
    <Counter 
     number={number}
     diff={diff}
-    onIncrease={onIncrease}
-    onDecrease={onDecrease}
-    onSetDiff={onSetDiff}
+    onIncrease={increase}
+    onDecrease={decrease}
+    onSetDiff={setDiff}
    />
   );
 }
 
-export default CounterContainer;
+// connect를 사용하기 위해선 2가지 함수 필요(객체로 선언해야 함)
+const mapStateToProps = (state) => ({
+  number: state.counter.number,
+  diff: state.counter.diff
+})
+
+// const mapDispatchToProps = dispatch => ({
+//   // 함수를 만들건데, 무엇을 dispatch할거냐, increase()호출해서 액션객체를 만들고 이걸 dispatch 할 것 
+//   onIncrease: () => dispatch(increase()),
+//   onDecrease: () => dispatch(decrease()),
+//   onSetDiff: diff => dispatch(setDiff(diff))
+// })
+
+// 위의 하나 하나 선언 및 호출한 것을 아래 bindActionCreators으로 대체할 수 있음
+// mapDispatchToProps가 함수 타입이 아닌 객체 타입으로 하게 된다면 bindActionCreators가 connect 내부에서 이루어져서 바로 사용할 수 있음(객체이면 자동적용)
+const mapDispatchToProps = (
+  {
+    increase,
+    decrease,
+    setDiff
+  }
+);
+
+// 같은 의미
+// const enhance = connect(mapStateToProps, mapDispatchToProps)
+// export default enhance(CounterContainer)
+export default connect(mapStateToProps, mapDispatchToProps)(CounterContainer);
+
